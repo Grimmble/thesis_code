@@ -37,7 +37,6 @@ const float LOWER_ERROR_OFFSET = -2.0;
 
 void setup() {
   delay(2000);
-  Serial.begin(115200);
   Wire.begin();
   findSetpoint();
   initializeTimerInterrupt();
@@ -48,20 +47,9 @@ void loop() {
     ISRflag = 0;
     readInput();
     filterInput();
-    Serial.print(rawStrainInput);
-    Serial.print(", ");
-    Serial.print(filteredInput);
-    Serial.print(", ");
     PIcontrol();
-    Serial.print(controllerOutput);
-    Serial.print(", ");
     sendOutput();
     requestEncoderInput();
-    Serial.println(encoderPosition);
-//    Serial.print(", ");
-//    setKp();
-//    Serial.println(Kp);
-    
   }
 }
 ISR(TIMER3_COMPA_vect) {
@@ -124,16 +112,6 @@ void findSetpoint() {
   rawSetpoint = total / 200.0;
 }
 
-void integrator() {
-  integratorOutput += controllerOutput * TIMESTEP;
-  if (integratorOutput > 255.0) {
-    integratorOutput = 255.0;
-  }
-  else if (integratorOutput < 0.0) {
-    integratorOutput = 0.0;
-  }
-}
-
 void initializeTimerInterrupt() {
   TCCR3A = 0; // Clear register TCCR3A
   TCCR3B = 0; // Clear register TCCR3B
@@ -148,11 +126,5 @@ void initializeTimerInterrupt() {
 void filterInput() {
     filteredInput = alpha * rawStrainInput + (1 - alpha) * lastFilteredOutput;
     lastFilteredOutput = filteredInput;
-}
-
-void setKp() {
-  int potValue = analogRead(A2);
-  potValue = map(potValue, 0, 1023, 0, 200);
-  Kp = potValue / 10.0;
 }
 
