@@ -1,7 +1,7 @@
  #include <Q2HX711.h>
 #include <Wire.h>
 
-//Interrrupt flag
+//Interrupt flag
 volatile byte ISRflag = 0;
 
 // I2C
